@@ -184,7 +184,7 @@ void pwmout_pulsewidth_us(pwmout_t *obj, int us) {
     PinName pin = (PinName)obj->pin;
     const uint8_t chn = pwm_connect(pin);
     uint16_t ticks = PWM_US_TO_TICKS(us);
-//    LOG("setPulseWidth pin %d chn %d ticks %d max %d div %d", pin, chn, ticks, pwm_max, pwm_prescaler);
+    LOG("setPulseWidth pin %d chn %d ticks %d max %d div %d", pin, chn, ticks, pwm_max, pwm_prescaler);
     pwm_us[0] -= (us - pwm_us[chn]);
     pwm_ticks[0] -= (ticks - pwm_ticks[chn]);
     pwm_us[chn] = us;
