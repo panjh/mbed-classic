@@ -21,7 +21,7 @@
 
 #define PWM_COUNT				8
 #define PWM_PERIOD_DEFAULT      20000
-#define COMENSATION_TICK		5
+#define COMPENSATION_TICK		5
 
 // 1uS precision, which with a 16bit timer gives us a maximum period of around 65ms.
 #define TIMER_PRESCALER_MIN     4
@@ -54,9 +54,9 @@ static uint16_t PWM_US_TO_TICKS(uint32_t value) {
     return ((uint16_t) (value / ((uint32_t)(1 << (pwm_prescaler - TIMER_PRESCALER_MIN)))));
 }
 
-extern char* volatile out;
-#define LOG(msg, arg...) out += sprintf(out, "\n" msg " @%d\n", ##arg, __LINE__)
-#define LOGT(msg, arg...) out += sprintf(out, msg, ##arg)
+//extern char* volatile out;
+//#define LOG(msg, arg...) out += sprintf(out, "\n" msg " @%d\n", ##arg, __LINE__)
+//#define LOGT(msg, arg...) out += sprintf(out, msg, ##arg)
 
 #ifdef __cplusplus
 extern "C" {
@@ -80,7 +80,7 @@ void TIMER2_IRQHandler(void) {
     	}
     }
 //    LOGT("%d:%d\t", tick, pwm_curr);
-    timer->CC[0] = tick - COMENSATION_TICK;
+    timer->CC[0] = tick - COMPENSATION_TICK;
     timer->TASKS_START = 1;
     timer->EVENTS_COMPARE[0] = 0;
 }
@@ -96,7 +96,7 @@ static void timer_init() {
     timer->POWER     = 0;
     timer->POWER     = 1;
     timer->MODE      = TIMER_MODE_MODE_Timer;
-    timer->BITMODE   = TIMER_BITMODE_BITMODE_16Bit << TIMER_BITMODE_BITMODE_Pos;
+    timer->BITMODE   = TIMER_BITMODE_BITMODE_16Bit;
     timer->PRESCALER = pwm_prescaler;
     timer->SHORTS = TIMER_SHORTS_COMPARE0_CLEAR_Msk;
     timer->INTENCLR = TIMER_INTENCLR_COMPARE0_Msk;
@@ -184,7 +184,7 @@ void pwmout_pulsewidth_us(pwmout_t *obj, int us) {
     PinName pin = (PinName)obj->pin;
     const uint8_t chn = pwm_connect(pin);
     uint16_t ticks = PWM_US_TO_TICKS(us);
-    LOG("setPulseWidth pin %d chn %d ticks %d max %d div %d", pin, chn, ticks, pwm_max, pwm_prescaler);
+//    LOG("setPulseWidth pin %d chn %d ticks %d max %d div %d", pin, chn, ticks, pwm_max, pwm_prescaler);
     pwm_us[0] -= (us - pwm_us[chn]);
     pwm_ticks[0] -= (ticks - pwm_ticks[chn]);
     pwm_us[chn] = us;
